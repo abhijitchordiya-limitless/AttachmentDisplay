@@ -1,0 +1,80 @@
+<!-- sldsValidatorIgnore -->
+<!--
+  @description       : 
+  @author            : Abhijit.Chordiya
+  @group             : 
+  @last modified on  : 03-10-2021
+  @last modified by  : Abhijit.Chordiya
+-->
+<template>
+	<table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_fixed-layout slds-table_striped" aria-label="Example default base table of Opportunities">
+		<thead>
+			<tr class="slds-line-height_reset">
+				<th  class="slds-truncate" scope="col">Name</th>
+        <th style="width:5%"></th>
+        <th class="slds-truncate" scope="col">Category</th>
+        <th class="slds-truncate" scope="col">Related to</th>	
+        <th>Verified By</th>	
+        <th >Notarized By</th>		
+			</tr>
+		</thead>
+		<tbody>
+      <template if:true={attachmentList} for:each={attachmentList} for:item="att" for:index="index">
+        <tr key={att.Id} class="slds-line-height_reset">
+          <th style="padding:0.3%" class="slds-truncate" title={att.DocFriendlyFileName__c}>{att.DocFriendlyFileName__c}</th>
+          <th style="width:5%;padding:0.3%">
+            <template if:true={att.Related_Attachment_ID__c}>
+              <a target="_blank" href={att.fileUrl}>
+                <lightning-icon size="x-small" icon-name="utility:preview" alternative-text="Preview" title="Preview"></lightning-icon>
+              </a>              
+            </template>
+          </th>
+          <th style="padding:0.3%" class="slds-truncate">{att.Category__c}</th>		
+          <th style="padding:0.3%" class="slds-truncate" title={att.Category_Item_Title__c}>{att.Category_Item_Title__c}</th>		
+          <th style="padding:0.3%">
+            <template if:true={att.Verified__c}>
+              {att.Verified_by__r.Name}
+            </template>
+            <template if:false={att.Verified__c}>
+              <!--template if:true={att.showButton}-->
+              <lightning-button rendered={att.showButton} variant="base" label="Verify" title="Verify" id={att.Id} onclick={verifyAttachment}></lightning-button>
+            <!--/template-->
+            </template>
+          </th>
+          <th style="padding:0.3%">
+              <template if:true={att.Notarization_Required__c}>
+                <template if:true={att.Notarized_By__c}>
+                  {att.Notarized_By__c} &nbsp;&nbsp;&nbsp; Notarized Type : {att.Notarized_Type__c}
+                </template>
+                <template if:false={att.Notarized_By__c}>
+                  <div>
+                  <div class="slds-float_left">
+                    <lightning-button variant="base" data-id={att.nId} label="Notarize" title="Notarize" onclick={notarizeAttachment}></lightning-button>&nbsp;&nbsp;&nbsp;
+                  </div>
+                  <div class="slds-float_right">
+                    <lightning-radio-group
+                    data-id={att.radioid} 
+                    name={att.radioid}
+                    label="Type of Notarization"
+                    options={att.options}
+                    value={att.value}
+                    type="button">
+                    </lightning-radio-group>
+                </div>
+                </div>
+                </template>
+              </template>
+          </th>
+          <th>
+            <template if:true={att.needSignature}>
+              <p data-id={att.Id} onclick={attachmentId} onpaste={pasteSignature}>Click &amp; Paste the Signature</p>
+            </template>
+            <template if:true={att.displaySignature}>
+              <a target="_blank" href={att.displaySignature}>SIGNATURE</a>
+            </template>
+          </th>		
+        </tr>
+    </template>
+		</tbody>
+	</table>
+</template>
